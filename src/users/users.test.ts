@@ -28,7 +28,7 @@ describe("users test", () => {
     expect(usersService.getAgeFromBirthday(birthDate)).toBe(29);
   });
 
-  it("should map request body to user etity ", () => {
+  it("should map update request body to user entity ", () => {
     const user = {
       full_name: "lotfi bouchama",
       email: "lotfi.0bouchama@gmail.com",
@@ -43,6 +43,26 @@ describe("users test", () => {
     expect(result.first_name).toBe("lotfi");
     expect(result.last_name).toBe("bouchama");
     expect(result.birthday).toBe("1994-01-01");
+  });
+
+  it("should map add request body to user entity ", () => {
+    const user = {
+      full_name: "lotfi bouchama",
+      email: "lotfi.0bouchama@gmail.com",
+      age: 28,
+      password: "password123",
+    };
+
+    const result = usersService.mapUpdateInput(user);
+
+    expect(result).toHaveProperty("first_name");
+    expect(result).toHaveProperty("last_name");
+    expect(result).toHaveProperty("birthday");
+    expect(result).toHaveProperty("password");
+    expect(result.first_name).toBe("lotfi");
+    expect(result.last_name).toBe("bouchama");
+    expect(result.birthday).toBe("1994-01-01");
+    expect(result.password).toBe("password123");
   });
 
   /*

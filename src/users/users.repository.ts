@@ -27,19 +27,34 @@ export class UsersRepository {
     return this.users.find((user) => user.id === id);
   }
 
+  getByEmail(email: string) {
+    return this.users.find((user) => user.email === email);
+  }
+
   add(user: Omit<UserEntity, "id">) {
     this.lastId++;
-    this.users.push({ ...user, id: "A" + this.lastId });
+    const newUser: UserEntity = { ...user, id: "A" + this.lastId };
+    this.users.push(newUser);
+    return newUser;
   }
 
   updateById(id: string, user: Partial<Omit<UserEntity, "id">>) {
     const userRefrence = this.users.find((user) => user.id === id);
+    if (!userRefrence) {
+      return undefined;
+    }
     for (const key in user) {
       userRefrence[key] = user[key];
     }
+    return userRefrence;
   }
 
   deleteById(id: string) {
+    const length = this.users.length;
     this.users = this.users.filter((user) => user.id !== id);
+    if (this.users.length === length) {
+      return false;
+    }
+    return true;
   }
 }
