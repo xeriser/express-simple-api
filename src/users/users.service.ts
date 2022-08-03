@@ -19,15 +19,43 @@ export interface UserUpdateInput extends Partial<UserAddInput> {}
 export class UsersService {
   constructor(private usersRepo: UsersRepository) {}
 
-  getAll() {}
+  getAll() {
+    return this.usersRepo.getAll().map(this.mapEntityToResponse);
+  }
 
-  getById(id: string) {}
+  getById(id: string) {
+    const user = this.usersRepo.getById(id);
+    if (!user) {
+      throw new Error("404");
+    }
+    return this.mapEntityToResponse(user);
+  }
 
-  updateById(id: string, user: UserUpdateInput) {}
+  updateById(id: string, user: UserUpdateInput) {
+    const updatedUser = this.usersRepo.updateById(id, user);
+    if (!updatedUser) {
+      throw new Error("404");
+    }
+    return this.mapEntityToResponse(updatedUser);
+  }
 
-  deleteById(id: string) {}
+  deleteById(id: string) {
+    const deleteResult = this.usersRepo.deleteById(id);
+    if (!deleteResult) {
+      throw new Error("404");
+    }
+    return true;
+  }
 
-  add(user: UserAddInput) {}
+  add(user: UserAddInput) {
+    const userByEmail = this.usersRepo.getByEmail(user.email);
+    if (userByEmail) {
+      throw new Error("409");
+    }
+    const mapedInput = this.mapAddInput(user);
+    const newUserEntity = this.usersRepo.add(mapedInput);
+    return this.mapEntityToResponse(newUserEntity);
+  }
 
   getBirthdayFromAge(age: number): Date {
     var today = new Date();
@@ -44,6 +72,17 @@ export class UsersService {
     }
 
     return age;
+  }
+
+  mapAddInput(userInput: UserAddInput): Omit<UserEntity, "id"> {
+    const [first_name, last_name] = userInput.full_name.split(" ");
+    return {
+      email: userInput.email,
+      first_name: first_name,
+      last_name: last_name,
+      birthday: this.ageToDateString(userInput.age),
+      password: userInput.password,
+    };
   }
 
   mapUpdateInput(userInput: UserUpdateInput): Partial<UserEntity> {
