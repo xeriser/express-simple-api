@@ -28,6 +28,23 @@ describe("users test", () => {
     expect(usersService.getAgeFromBirthday(birthDate)).toBe(29);
   });
 
+  it("should map request body to user etity ", () => {
+    const user = {
+      full_name: "lotfi bouchama",
+      email: "lotfi.0bouchama@gmail.com",
+      age: 28,
+    };
+
+    const result = usersService.mapUpdateInput(user);
+
+    expect(result).toHaveProperty("first_name");
+    expect(result).toHaveProperty("last_name");
+    expect(result).toHaveProperty("birthday");
+    expect(result.first_name).toBe("lotfi");
+    expect(result.last_name).toBe("bouchama");
+    expect(result.birthday).toBe("1994-01-01");
+  });
+
   /*
   it("should return birthday from age", () => {});
 
