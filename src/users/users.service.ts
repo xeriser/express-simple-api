@@ -1,3 +1,4 @@
+import { ConflictError, NotFoundError } from "../errorHandler";
 import { UserEntity, UsersRepository } from "./users.repository";
 
 export interface UserResponse {
@@ -20,21 +21,26 @@ export class UsersService {
   constructor(private usersRepo: UsersRepository) {}
 
   getAll() {
-    return this.usersRepo.getAll().map(this.mapEntityToResponse);
+    return this.usersRepo
+      .getAll()
+      .map((user) => this.mapEntityToResponse(user));
   }
 
   getById(id: string) {
     const user = this.usersRepo.getById(id);
     if (!user) {
-      throw new Error("404");
+      throw new NotFoundError("user not found");
     }
     return this.mapEntityToResponse(user);
   }
 
   updateById(id: string, user: UserUpdateInput) {
-    const updatedUser = this.usersRepo.updateById(id, user);
+    const updatedUser = this.usersRepo.updateById(
+      id,
+      this.mapUpdateInput(user)
+    );
     if (!updatedUser) {
-      throw new Error("404");
+      throw new NotFoundError("user not found");
     }
     return this.mapEntityToResponse(updatedUser);
   }
@@ -42,7 +48,7 @@ export class UsersService {
   deleteById(id: string) {
     const deleteResult = this.usersRepo.deleteById(id);
     if (!deleteResult) {
-      throw new Error("404");
+      throw new NotFoundError("user not found");
     }
     return true;
   }
@@ -50,7 +56,7 @@ export class UsersService {
   add(user: UserAddInput) {
     const userByEmail = this.usersRepo.getByEmail(user.email);
     if (userByEmail) {
-      throw new Error("409");
+      throw new ConflictError("email allready exists");
     }
     const mapedInput = this.mapAddInput(user);
     const newUserEntity = this.usersRepo.add(mapedInput);
