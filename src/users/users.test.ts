@@ -65,13 +65,26 @@ describe("users test", () => {
     expect(result.password).toBe("password123");
   });
 
-  /*
-  it("should return birthday from age", () => {});
+  it("shouldn't add user by duplicated email", () => {
+    const user = {
+      full_name: "lotfi bouchama",
+      email: "first_nameA1@gmail.com", // existing email in users.json
+      age: 28,
+      password: "password123",
+    };
 
-  it("should verify email uniqueness", () => {});
+    try {
+      usersService.add(user);
+    } catch (error) {
+      expect(error.status).toBe(409);
+    }
+  });
 
-  it("should delete a user", () => {});
-
-  it("should return true if user exist by id", () => {});
-  */
+  it("should throw not found when user does not exist", () => {
+    try {
+      usersService.deleteById("wrongId");
+    } catch (error) {
+      expect(error.status).toBe(404);
+    }
+  });
 });
