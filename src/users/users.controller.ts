@@ -22,6 +22,7 @@ userRoutes.get("/users/:user_id", (req, res, next) => {
     const user = usersService.getById(id);
     res.status(200).json(user);
   } catch (error) {
+    console.log("error happened here");
     next(error);
   }
 });
