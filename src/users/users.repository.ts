@@ -16,7 +16,7 @@ export class UsersRepository {
 
   private getStoredUsers(): UserEntity[] {
     return JSON.parse(
-      fs.readFileSync(path.join(__dirname, "./users.json"), "utf8")
+      fs.readFileSync(path.join(__dirname, "../../", "users.json"), "utf8")
     );
   }
 
@@ -40,12 +40,14 @@ export class UsersRepository {
 
   updateById(id: string, user: Partial<Omit<UserEntity, "id">>) {
     const userRefrence = this.users.find((user) => user.id === id);
+
     if (!userRefrence) {
       return undefined;
     }
     for (const key in user) {
       userRefrence[key] = user[key];
     }
+
     return userRefrence;
   }
 
